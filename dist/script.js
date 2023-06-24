@@ -17684,7 +17684,7 @@ window.addEventListener('DOMContentLoaded', function () {
     form: 0,
     type: 'tree'
   };
-  Object(_modules_modals__WEBPACK_IMPORTED_MODULE_1__["default"])();
+  Object(_modules_modals__WEBPACK_IMPORTED_MODULE_1__["default"])(modalState);
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])('.glazing_slider', '.glazing_block', '.glazing_content', 'active');
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])('.decoration_slider', '.no_click', '.decoration_content > div > div', 'after_click'); //div div потому что там под контентов еще 2 вложенных блока и только во втором находится контент, который под разными именами
 
@@ -17747,9 +17747,8 @@ var changeModalState = function changeModalState(state) {
           case 'SELECT':
             state[prop] = item.value;
             break;
-        }
+        } // console.log(state);
 
-        console.log(state);
       });
     });
   }
@@ -17927,9 +17926,11 @@ var forms = function forms(state) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
 /* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _validateForms__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./validateForms */ "./src/js/modules/validateForms.js");
 
 
-var modals = function modals() {
+
+var modals = function modals(state) {
   function bindModal(triggerSelector, modalSelector, closeSelector) {
     var closeClickOverlay = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
     var trigger = document.querySelectorAll(triggerSelector),
@@ -17942,12 +17943,7 @@ var modals = function modals() {
           e.preventDefault();
         }
 
-        windows.forEach(function (item) {
-          item.style.display = 'none';
-        });
-        modal.style.display = "block";
-        document.body.style.overflow = "hidden"; // document.body.classList.add('modal-open');
-        //чтобы скролилось только модальное окно
+        Object(_validateForms__WEBPACK_IMPORTED_MODULE_1__["default"])(item, modal, windows, state);
       });
     });
     close.addEventListener('click', function () {
@@ -17955,7 +17951,7 @@ var modals = function modals() {
         item.style.display = 'none';
       });
       modal.style.display = "none";
-      document.body.style.overflow = ""; // document.body.classList.remove('modal-open');
+      document.body.style.overflow = "";
     });
     modal.addEventListener('click', function (e) {
       if (e.target === modal && closeClickOverlay) {
@@ -17963,9 +17959,9 @@ var modals = function modals() {
           item.style.display = 'none';
         });
         modal.style.display = "none";
-        document.body.style.overflow = ""; // document.body.classList.remove('modal-open');
+        document.body.style.overflow = "";
       }
-    }); // чтобы закрывалось окно по клику на подложку
+    });
   }
 
   function showModalByTime(selector, time) {
@@ -18043,6 +18039,68 @@ var tabs = function tabs(headerSelector, tabSelector, contentSelector, activeCla
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (tabs);
+
+/***/ }),
+
+/***/ "./src/js/modules/validateForms.js":
+/*!*****************************************!*\
+  !*** ./src/js/modules/validateForms.js ***!
+  \*****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
+/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__);
+
+
+var validateForms = function validateForms(trigger, modal, windows, state) {
+  var openWindow = function openWindow() {
+    windows.forEach(function (item) {
+      item.style.display = 'none';
+    });
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden";
+  };
+
+  var showMessage = function showMessage(trigger) {
+    var existingMessage = trigger.parentNode.querySelector('.error-message');
+
+    if (!existingMessage) {
+      var message = document.createElement('div');
+      message.classList.add('error-message');
+      message.style.marginTop = '10px';
+      message.style.color = 'red';
+      var parent = trigger.parentNode;
+      parent.appendChild(message);
+      message.textContent = '*Заполните все поля';
+      trigger.addEventListener('click', function () {
+        message.remove();
+      });
+    }
+  };
+
+  if (trigger.id) {
+    switch (trigger.id) {
+      case 'popup_calc_button':
+        state.width && state.height ? openWindow() : showMessage(trigger);
+        break;
+
+      case 'popup_calc_profile_button':
+        state.profile ? openWindow() : showMessage(trigger);
+        break;
+
+      default:
+        openWindow();
+        break;
+    }
+  } else {
+    openWindow();
+  }
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (validateForms);
 
 /***/ }),
 

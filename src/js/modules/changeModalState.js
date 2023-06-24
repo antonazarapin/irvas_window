@@ -36,7 +36,7 @@ const changeModalState = (state) => {
                         break;
                 }
 
-                console.log(state);
+                // console.log(state);
             })
         })
     }

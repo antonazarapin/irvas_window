@@ -1,4 +1,6 @@
-const modals = () => {
+import validateForms from "./validateForms";
+
+const modals = (state) => {
     function bindModal(triggerSelector, modalSelector, closeSelector, closeClickOverlay = true) {
         const trigger = document.querySelectorAll(triggerSelector),
               modal = document.querySelector(modalSelector),
@@ -11,14 +13,7 @@ const modals = () => {
                     e.preventDefault();
                 }
 
-                windows.forEach(item => {
-                    item.style.display = 'none';
-                });
-    
-                modal.style.display = "block";
-                document.body.style.overflow = "hidden";
-                // document.body.classList.add('modal-open');
-                //чтобы скролилось только модальное окно
+                validateForms(item, modal, windows, state);
             });
         })
 
@@ -29,7 +24,6 @@ const modals = () => {
             
             modal.style.display = "none";
             document.body.style.overflow = "";
-            // document.body.classList.remove('modal-open');
         })
 
         modal.addEventListener('click', (e) => {
@@ -40,10 +34,8 @@ const modals = () => {
 
                 modal.style.display = "none";
                 document.body.style.overflow = "";
-                // document.body.classList.remove('modal-open');
             }
         })
-        // чтобы закрывалось окно по клику на подложку
     }
 
     function showModalByTime(selector, time) {
