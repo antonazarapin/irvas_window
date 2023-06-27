@@ -17674,6 +17674,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_tabs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/tabs */ "./src/js/modules/tabs.js");
 /* harmony import */ var _modules_forms__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/forms */ "./src/js/modules/forms.js");
 /* harmony import */ var _modules_changeModalState__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/changeModalState */ "./src/js/modules/changeModalState.js");
+/* harmony import */ var _modules_timer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/timer */ "./src/js/modules/timer.js");
+
 
 
 
@@ -17684,6 +17686,7 @@ window.addEventListener('DOMContentLoaded', function () {
     form: 0,
     type: 'tree'
   };
+  var deadline = '2023-09-31';
   Object(_modules_modals__WEBPACK_IMPORTED_MODULE_1__["default"])(modalState);
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])('.glazing_slider', '.glazing_block', '.glazing_content', 'active');
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])('.decoration_slider', '.no_click', '.decoration_content > div > div', 'after_click'); //div div потому что там под контентов еще 2 вложенных блока и только во втором находится контент, который под разными именами
@@ -17691,6 +17694,7 @@ window.addEventListener('DOMContentLoaded', function () {
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])('.balcon_icons', '.balcon_icons_img', '.big_img > img', 'do_image_more', 'inline-block');
   Object(_modules_changeModalState__WEBPACK_IMPORTED_MODULE_4__["default"])(modalState);
   Object(_modules_forms__WEBPACK_IMPORTED_MODULE_3__["default"])(modalState);
+  Object(_modules_timer__WEBPACK_IMPORTED_MODULE_5__["default"])('.container1', deadline);
 });
 
 /***/ }),
@@ -18042,6 +18046,72 @@ var tabs = function tabs(headerSelector, tabSelector, contentSelector, activeCla
 
 /***/ }),
 
+/***/ "./src/js/modules/timer.js":
+/*!*********************************!*\
+  !*** ./src/js/modules/timer.js ***!
+  \*********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var timer = function timer(id, deadline) {
+  var getTimeRemaining = function getTimeRemaining(endtime) {
+    var t = Date.parse(endtime) - Date.parse(new Date()),
+        seconds = Math.floor(t / 1000 % 60),
+        minutes = Math.floor(t / (1000 * 60) % 60),
+        hours = Math.floor(t / (1000 * 60 * 60) % 24),
+        days = Math.floor(t / (1000 * 60 * 60 * 24));
+    return {
+      'total': t,
+      'days': days,
+      'hours': hours,
+      'minutes': minutes,
+      'seconds': seconds
+    };
+  };
+
+  var setClock = function setClock(selector, endtime) {
+    var addZero = function addZero(num) {
+      if (num <= 9) {
+        return '0' + num;
+      } else {
+        return num;
+      }
+    };
+
+    var timer = document.querySelector(selector),
+        days = timer.querySelector('#days'),
+        hours = timer.querySelector('#hours'),
+        minutes = timer.querySelector('#minutes'),
+        seconds = timer.querySelector('#seconds'),
+        timeInterval = setInterval(updateClock, 1000);
+    updateClock();
+
+    function updateClock() {
+      var t = getTimeRemaining(endtime);
+      days.textContent = addZero(t.days);
+      hours.textContent = addZero(t.hours);
+      minutes.textContent = addZero(t.minutes);
+      seconds.textContent = addZero(t.seconds);
+
+      if (t.total <= 0) {
+        days.textContent = '00';
+        hours.textContent = '00';
+        minutes.textContent = '00';
+        seconds.textContent = '00';
+        clearInterval(timeInterval);
+      }
+    }
+  };
+
+  setClock(id, deadline);
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (timer);
+
+/***/ }),
+
 /***/ "./src/js/modules/validateForms.js":
 /*!*****************************************!*\
   !*** ./src/js/modules/validateForms.js ***!
@@ -18062,33 +18132,75 @@ var validateForms = function validateForms(trigger, modal, windows, state) {
     });
     modal.style.display = "block";
     document.body.style.overflow = "hidden";
+  }; // const showMessage = (trigger) => {
+  //     const existingMessage = trigger.parentNode.querySelector('.error-message');
+  //     if (!existingMessage) {
+  //         let message = document.createElement('div');
+  //         message.classList.add('error-message');
+  //         message.style.marginTop = '10px';
+  //         message.style.color = 'red';
+  //         const parent = trigger.parentNode;
+  //         parent.appendChild(message);
+  //         message.textContent = '*Заполните все поля';
+  //         trigger.addEventListener('click', () => {
+  //             message.remove();
+  //         });
+  //     }
+  // }
+
+
+  var width = document.querySelector('#width'),
+      height = document.querySelector('#height'),
+      coldCheck = document.querySelector('#coldCheck'),
+      warmCheck = document.querySelector('#warmCheck'),
+      cold = document.querySelector('#cold'),
+      warm = document.querySelector('#warm');
+
+  var showRequaredInputs = function showRequaredInputs() {
+    if (!width.value) {
+      width.style.border = '1px solid red';
+    }
+
+    if (!height.value) {
+      height.style.border = '1px solid red';
+    }
+
+    width.addEventListener('input', function () {
+      width.style.border = '1px solid #ccc';
+    });
+    height.addEventListener('input', function () {
+      height.style.border = '1px solid #ccc';
+    });
   };
 
-  var showMessage = function showMessage(trigger) {
-    var existingMessage = trigger.parentNode.querySelector('.error-message');
-
-    if (!existingMessage) {
-      var message = document.createElement('div');
-      message.classList.add('error-message');
-      message.style.marginTop = '10px';
-      message.style.color = 'red';
-      var parent = trigger.parentNode;
-      parent.appendChild(message);
-      message.textContent = '*Заполните все поля';
-      trigger.addEventListener('click', function () {
-        message.remove();
-      });
+  var showRequiredCheckbox = function showRequiredCheckbox() {
+    if (!coldCheck.checked && !warmCheck.checked) {
+      cold.style.border = '1px solid red';
+      warm.style.border = '1px solid red';
     }
+
+    coldCheck.addEventListener('change', function () {
+      if (coldCheck || warmCheck) {
+        cold.style.border = '1px solid #ccc';
+        warm.style.border = '1px solid #ccc';
+      }
+    });
+    warmCheck.addEventListener('change', function () {
+      if (coldCheck || warmCheck) {
+        cold.style.border = '1px solid #ccc';
+        warm.style.border = '1px solid #ccc';
+      }
+    });
   };
 
   if (trigger.id) {
     switch (trigger.id) {
       case 'popup_calc_button':
-        state.width && state.height ? openWindow() : showMessage(trigger);
+        state.width && state.height ? openWindow() : showRequaredInputs();
         break;
 
       case 'popup_calc_profile_button':
-        state.profile ? openWindow() : showMessage(trigger);
+        state.profile ? openWindow() : showRequiredCheckbox();
         break;
 
       default:
