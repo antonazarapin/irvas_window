@@ -1,4 +1,4 @@
-const validateForms = (trigger, modal, windows, state) => {
+const validateForms = (trigger, modal, windows, state, scroll) => {
     const openWindow = () => {
         windows.forEach(item => {
             item.style.display = 'none';
@@ -6,6 +6,7 @@ const validateForms = (trigger, modal, windows, state) => {
 
         modal.style.display = "block";
         document.body.style.overflow = "hidden";
+        document.body.style.marginRight = `${scroll}px`;
     }
 
     // const showMessage = (trigger) => {
