@@ -32,6 +32,7 @@ const timer = (id, deadline) => {
               timeInterval = setInterval(updateClock, 1000);
 
         updateClock();
+        //для того, чтобы числа не прыгали пока не запустится интервал, а сразу показывало то, что нужно на странице
 
         function updateClock() {
             const t = getTimeRemaining(endtime);
